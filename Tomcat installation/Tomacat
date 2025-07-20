@@ -1,0 +1,99 @@
+### ✅ **Step-by-Step Apache Tomcat + GitHub Deployment Script (Ubuntu)**
+
+#### 🧰 Prerequisites
+
+Make sure Java is installed:
+```bash
+sudo apt update
+sudo apt install -y default-jdk git curl unzip
+
+Step 1: Create `tomcat` User
+sudo useradd -m -U -d /opt/tomcat -s /bin/false tomcat
+
+Step 2: Download and Install Apache Tomcat
+cd /tmp
+curl -O https://downloads.apache.org/tomcat/tomcat-10/v10.1.43/bin/apache-tomcat-10.1.43.tar.gz
+sudo mkdir /opt/tomcat
+sudo tar -xvzf apache-tomcat-10.1.43.tar.gz -C /opt/tomcat --strip-components=1
+sudo chown -R tomcat: /opt/tomcat
+sudo chmod +x /opt/tomcat/bin/*.sh
+
+Step 3: Create a Systemd Service File
+bash
+sudo tee /etc/systemd/system/tomcat.service > /dev/null <<EOF
+[Unit]
+Description=Apache Tomcat Web Application Container
+After=network.target
+
+[Service]
+Type=forking
+
+User=tomcat
+Group=tomcat
+
+Environment="JAVA_HOME=$(dirname $(dirname $(readlink -f $(which javac))))"
+Environment="CATALINA_PID=/opt/tomcat/temp/tomcat.pid"
+Environment="CATALINA_HOME=/opt/tomcat"
+Environment="CATALINA_BASE=/opt/tomcat"
+ExecStart=/opt/tomcat/bin/startup.sh
+ExecStop=/opt/tomcat/bin/shutdown.sh
+
+[Install]
+WantedBy=multi-user.target
+EOF
+```
+
+---
+
+ Step 4: Start and Enable Tomcat
+
+```bash
+sudo systemctl daemon-reexec
+sudo systemctl daemon-reload
+sudo systemctl start tomcat
+sudo systemctl enable tomcat
+
+Step 5: Configure Tomcat Users
+
+```bash
+sudo tee /opt/tomcat/conf/tomcat-users.xml > /dev/null <<EOF
+<tomcat-users>
+  <role rolename="manager-gui"/>
+  <role rolename="manager-script"/>
+  <user username="admin" password="admin123" roles="manager-gui,manager-script"/>
+</tomcat-users>
+EOF
+
+ Step 6: Enable Remote Access to Manager App
+
+```bash
+sudo tee /opt/tomcat/webapps/manager/META-INF/context.xml > /dev/null <<EOF
+<Context privileged="true" antiResourceLocking="false">
+  <Valve className="org.apache.catalina.valves.RemoteAddrValve"
+         allow=".*" />
+</Context>
+EOF
+```
+ Restart Tomcat
+
+```bash
+sudo systemctl restart tomcat
+
+ Step 7: Confirm Tomcat Is Running
+
+cp -r YOUR_REPO /opt/tomcat/webapps/ROOT
+sudo systemctl restart tomcat
+
+❌ Common Errors & Fixes
+
+| **Error**                   | **Fix**                                                                                      |
+| --------------------------- | -------------------------------------------------------------------------------------------- |
+| `netstat not found`         | Use `ss -tuln` instead                                                                       |
+| `404 /manager/html`         | Ensure manager webapp is not deleted                                                         |
+| `No login prompt`           | Fix `context.xml` and `tomcat-users.xml`, restart Tomcat                                     |
+| `Permission denied`         | Ensure files are owned by `tomcat:tomcat`                                                    |
+| `Jenkins deployment failed` | Ensure WAR file is deployed under `/opt/tomcat/webapps/` and Jenkins has correct permissions |
+| `port 8080 not reachable`   | Check firewall or AWS Security Group inbound rules for TCP 8080                              |
+
+
+
