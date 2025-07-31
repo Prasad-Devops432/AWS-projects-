@@ -1,0 +1,66 @@
+pipeline {
+    agent any
+
+    environment {
+        GIT_REPO = 'https://github.com/Prasad-Devops432/AWS-projects-.git'
+        TOMCAT_URL = 'http://3.25.223.48:8080'
+        WAR_NAME = 'My-website.war'           // WAR name should match the context
+        TOMCAT_PATH = '/My-website'           // This is the context path
+    }
+
+    stages {
+        stage('Clean Workspace') {
+            steps {
+                echo '🧹 Cleaning workspace...'
+                cleanWs()
+            }
+        }
+
+        stage('Clone Repository') {
+            steps {
+                echo '🔄 Cloning repository...'
+                git url: "${GIT_REPO}", branch: 'main'
+            }
+        }
+
+        stage('Build WAR') {
+            steps {
+                echo '📦 Building WAR file...'
+                sh '''
+                    mkdir -p webapp_root
+                    cp python-web-app/index.html webapp_root/
+                    cd webapp_root
+                    jar -cvf ../My-website.war .
+                '''
+                sh "ls -lh ${WAR_NAME}"
+            }
+        }
+
+        stage('Deploy to Tomcat') {
+            steps {
+                echo '🚀 Deploying WAR to Tomcat...'
+                withCredentials([usernamePassword(credentialsId: 'tomcat-credentials', usernameVariable: 'TOMCAT_USER', passwordVariable: 'TOMCAT_PASS')]) {
+                    sh """
+                        curl -v --fail --upload-file ${WAR_NAME} \\
+                            --user ${TOMCAT_USER}:${TOMCAT_PASS} \\
+                            "${TOMCAT_URL}/manager/text/deploy?path=${TOMCAT_PATH}&update=true"
+                    """
+                }
+            }
+        }
+
+        stage('Verify Deployment') {
+            steps {
+                echo "✅ Deployment complete. Access it at: ${TOMCAT_URL}${TOMCAT_PATH}/"
+                sh "curl -s --fail ${TOMCAT_URL}${TOMCAT_PATH}/ | grep html || true"
+            }
+        }
+    }
+
+    post {
+        always {
+            echo '🧹 Cleaning workspace after pipeline...'
+            cleanWs()
+        }
+    }
+}
