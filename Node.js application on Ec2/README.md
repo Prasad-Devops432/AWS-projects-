@@ -1,7 +1,3 @@
-Awesome, Prasad! Let’s take your `README.md` to the next level by turning it into a student-style report with diagrams and cost analysis. This version will help you showcase your technical understanding and justify your infrastructure choices—perfect for college submissions or portfolio work.
-
----
-
 # 🧾 Node.js App Deployment on AWS EC2 – Student Report
 
 ## 📘 Project Overview
