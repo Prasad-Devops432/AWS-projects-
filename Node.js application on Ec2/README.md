@@ -62,8 +62,6 @@ npm start
 http://<your-ec2-public-ip>:3010
 ```
 
----
-
 ## 🔄 Optional: Use PM2 for Process Management
 
 ```bash
@@ -71,9 +69,6 @@ sudo npm install -g pm2
 pm2 start app.js
 pm2 startup
 pm2 save
-```
-
----
 
 ## 💰 Cost Analysis (Sample)
 
@@ -84,20 +79,7 @@ pm2 save
 | Data Transfer    | 15 GB/month    | ~$1.35                  |
 | Total            | —              | ~$2.15                  |
 
-> Note: Costs may vary based on region and usage. Use [Azure Cost Analysis](https://portal.azure.com/#view/Microsoft_Azure_CostManagement/CostAnalysis/scope/%2Fsubscriptions%2F4b0debb9-90ab-46db-8f7d-3f697f5bf2e8) or AWS Pricing Calculator for accurate estimates.
-
----
-
-## 📁 Project Structure
-
-```
-my-node-app/
-├── app.js
-├── package.json
-└── README.md
-```
-
----
+> Note: Costs may vary based on region and usage. Use [Azure Cost Analysis]
 
 ## 📌 Justification
 
