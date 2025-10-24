@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # MyApp – Node.js + Express Static Website
 
 This project is a simple **Node.js + Express server** that serves static files (HTML, CSS, JS) from a `public` directory. It demonstrates how to configure environment variables with `.env`, run locally, and deploy to an AWS EC2 instance.
@@ -186,3 +187,15 @@ pm2 save
 * Use `curl http://localhost:3010` inside EC2 to test locally.
 
 
+=======
+# Maven Web App - CI/CD Project
+
+This project demonstrates a simple CI/CD pipeline using **GitHub**, **Jenkins**, **Maven**, and **Docker**.
+
+## Steps:
+1. Clone this repo in Jenkins.
+2. Build using Maven (`mvn clean package`).
+3. Containerize using Docker.
+4. Run container on port **1990**.
+5. Access the app at `http://<your-server-ip>:1990`.
+>>>>>>> e968115 (my maven application for CICD pipline)
